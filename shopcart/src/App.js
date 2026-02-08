@@ -17,6 +17,7 @@ class App extends Component {
     super(props);
     this.state = {
       products: productsData,
+      sortType: "normal",
       user: null,
     };
   }
@@ -41,11 +42,31 @@ class App extends Component {
     this.setState({ products: updatedProducts });
   };
 
+  handleSortChange = (e) => {
+    this.setState({ sortType: e.target.value });
+  };
+
+  getSortedProducts = () => {
+    const productsCopy = [...this.state.products];
+
+    switch (this.state.sortType) {
+      case "lowest":
+        return productsCopy.sort((a, b) => a.price - b.price);
+      case "highest":
+        return productsCopy.sort((a, b) => b.price - a.price);
+      case "normal":
+      default:
+        return productsCopy.sort((a, b) => a.id - b.id);
+    }
+  };
+
   setUser = (userObj) => {
     this.setState({ user: userObj });
   };
 
   render() {
+    const sortedProducts = this.getSortedProducts();
+
     return (
       <BrowserRouter>
         <Navbar products={this.state.products} />
@@ -55,7 +76,9 @@ class App extends Component {
             path="/"
             element={
               <DisplayProducts
-                products={this.state.products}
+                products={sortedProducts}
+                sortType={this.state.sortType}
+                handleSortChange={this.handleSortChange}
                 handleAdd={this.handleAdd}
                 handleSubtract={this.handleSubtract}
               />
